@@ -15,4 +15,13 @@ class SMASHUE_API UArenaSettings : public UDeveloperSettings
 public:
 	UPROPERTY(Config, EditAnywhere, Category="Characters")
 	TSubclassOf<ASmashCharacter> SmashCharacterClassP0;
+
+	UPROPERTY(Config, EditAnywhere, Category="Characters")
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP1;
+
+	UPROPERTY(Config, EditAnywhere, Category="Characters")
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP2;
+
+	UPROPERTY(Config, EditAnywhere, Category="Characters")
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP3;
 };

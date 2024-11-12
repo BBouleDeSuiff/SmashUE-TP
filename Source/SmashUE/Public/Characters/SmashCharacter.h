@@ -4,27 +4,14 @@
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
+class USmashCharacterStateMachine;
+
 UCLASS()
 class SMASHUE_API ASmashCharacter : public ACharacter
 {
     GENERATED_BODY()
 
 #pragma region Unreal Default
-
-#pragma region Orient
-
-public:
-    float GetOrientX() const;
-    void SetOrientX(float NewOrientX);
-
-protected:
-    UPROPERTY(BlueprintReadOnly)
-    float OrientX = 1.f;
-    
-    void RotateMeshUsingOrientX() const;
- 
-#pragma endregion
-
 public:
     // Sets default values for this character's properties
     ASmashCharacter();
@@ -39,4 +26,29 @@ protected:
     virtual void BeginPlay() override;
 
 #pragma endregion
+#pragma region Orient
+
+public:
+    float GetOrientX() const;
+    void SetOrientX(float NewOrientX);
+
+protected:
+    UPROPERTY(BlueprintReadOnly)
+    float OrientX = 1.f;
+    
+    void RotateMeshUsingOrientX() const;
+ 
+#pragma endregion
+
+#pragma region State Machine
+    
+public:
+    void CreateStateMachine();
+    void InitStateMachine();
+protected:
+    UPROPERTY()
+    TObjectPtr<USmashCharacterStateMachine> StateMachine;
+    
+#pragma endregion
+
 };

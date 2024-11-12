@@ -40,11 +40,20 @@ protected:
  
 #pragma endregion
 
+#pragma region Movement
+
+public:
+    void Move(float InputX, float Speed);
+
+ 
+#pragma endregion
+
 #pragma region State Machine
     
 public:
     void CreateStateMachine();
     void InitStateMachine();
+    void TickStateMachine(float DeltaTime) const;
 protected:
     UPROPERTY(BlueprintReadOnly)
     TObjectPtr<USmashCharacterStateMachine> StateMachine;

@@ -3,6 +3,9 @@
 
 #include "Characters/States/SmashCharacterStateWalk.h"
 
+#include "Characters/SmashCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 ESmashCharacterStateID USmashCharacterStateWalk::GetStateID()
 {
@@ -29,4 +32,14 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextStateID)
 		FColor::Cyan,
 		TEXT("Exit State: Walk")
 	);
+}
+
+void USmashCharacterStateWalk::StateTick(float DeltaTime)
+{
+	Super::StateTick(DeltaTime);
+}
+
+void USmashCharacterStateWalk::Move(float InputX)
+{
+	Character->Move(InputX, MoveSpeedMax);
 }

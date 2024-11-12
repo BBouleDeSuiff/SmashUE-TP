@@ -4,6 +4,7 @@
 #include "Characters/SmashCharacterState.h"
 #include "Characters/SmashCharacterState.h"
 
+#include "Characters/SmashCharacter.h"
 #include "Characters/SmashCharacterStateMachine.h"
 
 
@@ -32,9 +33,21 @@ void USmashCharacterState::StateInit(USmashCharacterStateMachine* InStateMachine
 
 void USmashCharacterState::StateEnter(ESmashCharacterStateID PreviousStateID)
 {
+	if(Animation == nullptr) return;
+    Character->PlayAnimMontage(Animation);
+	GEngine->AddOnScreenDebugMessage(
+	-1,
+	3.f,
+	FColor::Magenta,
+	FString::Printf(TEXT("Init State %s"), *Animation->GetName())
+);
 }
 
 void USmashCharacterState::StateExit(ESmashCharacterStateID NextStateID)
+{
+}
+
+void USmashCharacterState::StateTick(float DeltaTime)
 {
 }
 

@@ -1,5 +1,6 @@
 #include "Characters/SmashCharacter.h"
 #include "Characters/SmashCharacterStateMachine.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 float ASmashCharacter::GetOrientX() const
 {
@@ -18,6 +19,12 @@ void ASmashCharacter::RotateMeshUsingOrientX() const
     GetMesh()->SetRelativeRotation(Rotation);
 }
 
+void ASmashCharacter::Move(float InputX, float Speed)
+{
+    this->GetCharacterMovement()->Velocity = FVector(InputX *  Speed, 0, 0);
+    SetOrientX(InputX);
+}
+
 void ASmashCharacter::CreateStateMachine()
 {
     StateMachine = NewObject<USmashCharacterStateMachine>(this);
@@ -27,6 +34,12 @@ void ASmashCharacter::InitStateMachine()
 {
     if(StateMachine == nullptr) return;
     StateMachine->Init(this);
+}
+
+void ASmashCharacter::TickStateMachine(float DeltaTime) const
+{
+    if(StateMachine == nullptr) return;
+    StateMachine->Tick(DeltaTime);
 }
 
 // Sets default values
@@ -50,6 +63,7 @@ void ASmashCharacter::BeginPlay()
 void ASmashCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    TickStateMachine(DeltaTime);
     RotateMeshUsingOrientX();
 }
 

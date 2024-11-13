@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
@@ -37,7 +38,7 @@ public:
 protected:
     UPROPERTY(BlueprintReadOnly)
     float OrientX = 1.f;
-    
+
     void RotateMeshUsingOrientX() const;
  
 #pragma endregion
@@ -61,7 +62,7 @@ protected:
     
 #pragma endregion
 
-#pragma region Inputs
+#pragma region Inputs Mapping
 
 public:
     UPROPERTY()
@@ -70,6 +71,20 @@ public:
     TObjectPtr<USmashCharacterInputData> InputData;
 protected:
     void SetupMappingContextIntoController() const;
+
+ 
+#pragma endregion
+    
+#pragma region Inputs Move X
+
+public:
+    float GetInputMoveX() const;
+protected:
+    UPROPERTY()
+    float InputMoveX = 0.f;
+private:
+    void BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
+    void OnInputMoveX(const FInputActionValue& InputActionValue);
 
  
 #pragma endregion

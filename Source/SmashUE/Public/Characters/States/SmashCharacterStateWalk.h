@@ -18,8 +18,6 @@ public:
 	virtual void StateExit(ESmashCharacterStateID NextStateID) override;
 	virtual void StateTick(float DeltaTime) override;
 	
-	UFUNCTION(BlueprintCallable)
-	void Move(float InputX);
 protected:
 	UPROPERTY(EditAnywhere)
 	float MoveSpeedMax;

@@ -4,6 +4,7 @@
 #include "Characters/States/SmashCharacterStateWalk.h"
 
 #include "Characters/SmashCharacter.h"
+#include "Characters/SmashCharacterStateMachine.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -37,9 +38,12 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextStateID)
 void USmashCharacterStateWalk::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
-}
-
-void USmashCharacterStateWalk::Move(float InputX)
-{
-	Character->Move(InputX, MoveSpeedMax);
+	if(FMath::Abs(Character->GetInputMoveX())< 0.1f)
+	{
+		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
+	}
+	else
+	{
+		Character->Move(Character->GetInputMoveX(), MoveSpeedMax);
+	}
 }

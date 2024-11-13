@@ -1,6 +1,7 @@
 #include "Characters/SmashCharacter.h"
 #include "Characters/SmashCharacterStateMachine.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 float ASmashCharacter::GetOrientX() const
 {
@@ -42,6 +43,20 @@ void ASmashCharacter::TickStateMachine(float DeltaTime) const
     StateMachine->Tick(DeltaTime);
 }
 
+void ASmashCharacter::SetupMappingContextIntoController() const
+{
+    APlayerController* PlayerController = Cast<APlayerController>(Controller);
+    if(PlayerController == nullptr) return;
+
+    ULocalPlayer* Player = PlayerController->GetLocalPlayer();
+    if(Player == nullptr) return;
+
+    UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+    if(InputSystem == nullptr) return;
+
+    InputSystem->AddMappingContext(InputMappingContext, 0);
+}
+
 // Sets default values
 ASmashCharacter::ASmashCharacter()
 {
@@ -72,4 +87,5 @@ void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+    SetupMappingContextIntoController();
 }

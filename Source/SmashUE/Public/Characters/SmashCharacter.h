@@ -4,7 +4,9 @@
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
+class UInputMappingContext;
 class USmashCharacterStateMachine;
+class USmashCharacterInputData;
 
 UCLASS()
 class SMASHUE_API ASmashCharacter : public ACharacter
@@ -45,7 +47,6 @@ protected:
 public:
     void Move(float InputX, float Speed);
 
- 
 #pragma endregion
 
 #pragma region State Machine
@@ -58,6 +59,19 @@ protected:
     UPROPERTY(BlueprintReadOnly)
     TObjectPtr<USmashCharacterStateMachine> StateMachine;
     
+#pragma endregion
+
+#pragma region Inputs
+
+public:
+    UPROPERTY()
+    TObjectPtr<UInputMappingContext> InputMappingContext;
+    UPROPERTY()
+    TObjectPtr<USmashCharacterInputData> InputData;
+protected:
+    void SetupMappingContextIntoController() const;
+
+ 
 #pragma endregion
 
 };

@@ -4,7 +4,32 @@
 #include "EnhancedInputSubsystems.h"
 #include "Characters/SmashCharacterInputData.h"
 #include "EnhancedInputComponent.h"
+#include "Camera/CameraWorldSubsystem.h"
 
+// Sets default values
+ASmashCharacter::ASmashCharacter()
+{
+    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
+}
+
+// Called when the game starts or when spawned
+void ASmashCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    CreateStateMachine();
+
+    InitStateMachine();
+    GetWorld()->GetSubsystem<UCameraWorldSubsystem>()->AddFollowTarget(this);
+}
+
+// Called every frame
+void ASmashCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    TickStateMachine(DeltaTime);
+    RotateMeshUsingOrientX();
+}
 
 float ASmashCharacter::GetOrientX() const
 {
@@ -160,30 +185,6 @@ void ASmashCharacter::OnInputFallFast(const FInputActionValue& InputActionValue)
     InputFallFastEvent.Broadcast(InputMoveY);
 }
 
-// Sets default values
-ASmashCharacter::ASmashCharacter()
-{
-    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
-
-}
-
-// Called when the game starts or when spawned
-void ASmashCharacter::BeginPlay()
-{
-    Super::BeginPlay();
-    CreateStateMachine();
-
-    InitStateMachine();
-}
-
-// Called every frame
-void ASmashCharacter::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-    TickStateMachine(DeltaTime);
-    RotateMeshUsingOrientX();
-}
 
 // Called to bind functionality to input
 void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -32,9 +32,6 @@ void USmashCharacterStateIdle::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
-	FString TheFloatStr = FString::SanitizeFloat(Character->GetInputMoveY());
-	GEngine->AddOnScreenDebugMessage( -1,1.0,FColor::Red, *TheFloatStr );
-	
 	if(Character->GetMovementComponent()->IsFalling())
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Fall);

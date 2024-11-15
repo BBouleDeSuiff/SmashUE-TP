@@ -36,13 +36,7 @@ void USmashCharacterStateJump::StateExit(ESmashCharacterStateID NextStateID)
 void USmashCharacterStateJump::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
-
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		3.f,
-		FColor::Magenta,
-		FString::Printf(TEXT("Move Y : %d"), Character->GetInputMoveY())
-	);
+	
 	if(Character->GetInputMoveY() < 0)
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Fall);

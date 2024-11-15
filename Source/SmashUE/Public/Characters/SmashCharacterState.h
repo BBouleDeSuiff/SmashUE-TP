@@ -33,4 +33,5 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* Animation;
+	UAnimInstance* AnimationInstance;
 };

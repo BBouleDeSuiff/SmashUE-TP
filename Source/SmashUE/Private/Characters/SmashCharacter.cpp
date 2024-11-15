@@ -25,7 +25,7 @@ void ASmashCharacter::RotateMeshUsingOrientX() const
 
 void ASmashCharacter::Move(float InputX, float Speed)
 {
-    this->GetCharacterMovement()->Velocity = FVector(InputX *  Speed, 0, 0);
+    this->AddMovementInput(FVector::ForwardVector * Speed, InputX);
     SetOrientX(InputX);
 }
 
@@ -65,6 +65,11 @@ float ASmashCharacter::GetInputMoveX() const
     return InputMoveX;
 }
 
+float ASmashCharacter::GetInputMoveY() const
+{
+    return InputMoveY;
+}
+
 void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
     if(InputData == nullptr) return;
@@ -100,6 +105,37 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
             &ASmashCharacter::OnInputMoveXFast
         );
     }
+    if(InputData->InputActionJump)
+    {
+        EnhancedInputComponent->BindAction(
+            InputData->InputActionJump,
+            ETriggerEvent::Started,
+            this,
+            &ASmashCharacter::OnInputJump
+        );
+    }
+    
+    if(InputData->InputActionFallFast)
+    {
+        EnhancedInputComponent->BindAction(
+            InputData->InputActionFallFast,
+            ETriggerEvent::Started,
+            this,
+            &ASmashCharacter::OnInputFallFast
+        );
+        EnhancedInputComponent->BindAction(
+            InputData->InputActionFallFast,
+            ETriggerEvent::Completed,
+            this,
+            &ASmashCharacter::OnInputFallFast
+        );
+        EnhancedInputComponent->BindAction(
+            InputData->InputActionFallFast,
+            ETriggerEvent::Triggered,
+            this,
+            &ASmashCharacter::OnInputFallFast
+        );
+    }
 }
 
 void ASmashCharacter::OnInputMoveX(const FInputActionValue& InputActionValue)
@@ -111,6 +147,17 @@ void ASmashCharacter::OnInputMoveXFast(const FInputActionValue& InputActionValue
 {
     InputMoveX = InputActionValue.Get<float>();
     InputMoveXFastEvent.Broadcast(InputMoveX);
+}
+
+void ASmashCharacter::OnInputJump(const FInputActionValue& InputActionValue)
+{
+    InputJumpEvent.Broadcast();
+}
+
+void ASmashCharacter::OnInputFallFast(const FInputActionValue& InputActionValue)
+{
+    InputMoveY = InputActionValue.Get<float>();
+    InputFallFastEvent.Broadcast(InputMoveY);
 }
 
 // Sets default values

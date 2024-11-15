@@ -35,6 +35,7 @@ void USmashCharacterState::StateEnter(ESmashCharacterStateID PreviousStateID)
 {
 	if(Animation == nullptr) return;
     Character->PlayAnimMontage(Animation);
+	AnimationInstance = Cast<UAnimInstance>(Character->GetMesh()->GetAnimInstance());
 	GEngine->AddOnScreenDebugMessage(
 	-1,
 	3.f,

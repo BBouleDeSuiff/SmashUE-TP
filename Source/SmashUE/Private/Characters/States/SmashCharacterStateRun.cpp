@@ -17,16 +17,25 @@ ESmashCharacterStateID USmashCharacterStateRun::GetStateID()
 void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousStateID)
 {
 	Super::StateEnter(PreviousStateID);
+	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateRun::OnInputJump);
 }
 
 void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextStateID)
 {
 	Super::StateExit(NextStateID);
+	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateRun::OnInputJump);
 }
 
 void USmashCharacterStateRun::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
+
+	if(Character->GetMovementComponent()->IsFalling())
+	{
+		StateMachine->ChangeState(ESmashCharacterStateID::Fall);
+		return;
+	}
+	
 	if(FMath::Abs(Character->GetInputMoveX()) < GetDefault<USmashCharacterSettings>()->InputMoveXThreshold)
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
@@ -36,3 +45,11 @@ void USmashCharacterStateRun::StateTick(float DeltaTime)
 		Character->Move(Character->GetInputMoveX(), MoveSpeedMax);
 	}
 }
+void USmashCharacterStateRun::OnInputJump()
+{
+	if(!Character->GetMovementComponent()->IsFalling())
+	{
+		StateMachine->ChangeState(ESmashCharacterStateID::Jump);
+	}
+}
+

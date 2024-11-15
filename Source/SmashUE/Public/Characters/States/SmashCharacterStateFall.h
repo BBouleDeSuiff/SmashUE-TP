@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Characters/SmashCharacterState.h"
-#include "SmashCharacterStateWalk.generated.h"
+#include "SmashCharacterStateFall.generated.h"
 
 
 UCLASS(ClassGroup=(SmashCharacterState), meta=(BlueprintSpawnableComponent))
-class SMASHUE_API USmashCharacterStateWalk : public USmashCharacterState
+class SMASHUE_API USmashCharacterStateFall : public USmashCharacterState
 {
 	GENERATED_BODY()
 
@@ -17,13 +17,13 @@ public:
 	virtual void StateEnter(ESmashCharacterStateID PreviousStateID) override;
 	virtual void StateExit(ESmashCharacterStateID NextStateID) override;
 	virtual void StateTick(float DeltaTime) override;
-	
-	UFUNCTION()
-	void OnInputMoveXFast(float InputMoveX);
-	UFUNCTION()
-	void OnInputJump();
-	
 protected:
 	UPROPERTY(EditAnywhere)
-	float MoveSpeedMax;
+	float FallHorizontalMoveSpeed;
+	UPROPERTY(EditAnywhere)
+	float FallAirControl;
+	UPROPERTY(EditAnywhere)
+	float FallGravityScale;
+	UPROPERTY(EditAnywhere)
+	float FallFastGravityScale;
 };

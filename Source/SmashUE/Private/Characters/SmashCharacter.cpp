@@ -185,6 +185,16 @@ void ASmashCharacter::OnInputFallFast(const FInputActionValue& InputActionValue)
     InputFallFastEvent.Broadcast(InputMoveY);
 }
 
+FVector ASmashCharacter::GetFollowPosition()
+{
+    return GetActorLocation();
+}
+
+bool ASmashCharacter::IsFollowable()
+{
+    return true;
+}
+
 
 // Called to bind functionality to input
 void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -1,6 +1,7 @@
 #include "Camera/CameraWorldSubsystem.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraFollowTarget.h"
+#include "Camera/CameraSettings.h"
 #include "Kismet/GameplayStatics.h"
 
 void UCameraWorldSubsystem::PostInitialize()
@@ -11,7 +12,9 @@ void UCameraWorldSubsystem::PostInitialize()
 void UCameraWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-	CameraMain = FindCameraByTag(TEXT("CameraMain"));
+	CameraSettings = GetDefault<UCameraSettings>();
+	CameraMain = FindCameraByTag(CameraSettings->CameraMainTag);
+
 
 	AActor* CameraBoundsActor = FindCameraBoundsActor();
 	if(CameraBoundsActor != nullptr)
@@ -20,11 +23,15 @@ void UCameraWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	}
 
 	InitCameraZoomParameters();
+	CameraPositionStart = CameraMain->GetComponentLocation();
+	CameraPositionTarget = CameraMain->GetComponentLocation();
+	CurrentPositionDampingInterpolant = 0;
 }
 
 void UCameraWorldSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	TickUpdateCameraZoom(DeltaTime);
 	TickUpdateCameraPosition(DeltaTime);
 }
@@ -41,20 +48,43 @@ void UCameraWorldSubsystem::RemoveFollowTarget(UObject* FollowTarget)
 
 void UCameraWorldSubsystem::TickUpdateCameraPosition(float DeltaTime)
 {
-	FVector NewLocation = CalculateAveragePositionBetweenTargets();
-	ClampPositionIntoCameraBounds(NewLocation);
-	CameraMain->SetWorldLocation(FVector(NewLocation.X, CameraMain->GetComponentLocation().Y, NewLocation.Z));
+	
+	if(CurrentPositionDampingInterpolant >= 1)
+	{
+		CurrentPositionDampingInterpolant = 0;
+		CameraPositionStart = CameraMain->GetComponentLocation();
+		FVector NewLocation = CalculateAveragePositionBetweenTargets();
+		ClampPositionIntoCameraBounds(NewLocation);
+		CameraPositionTarget = FVector(NewLocation.X, CameraPositionTarget.Y, NewLocation.Z);
+	}
+	else
+	{
+		CurrentPositionDampingInterpolant += DeltaTime * CameraSettings->PositionDampingFactor;
+	}
+
+	CameraMain->SetWorldLocation(FMath::Lerp(CameraPositionStart, CameraPositionTarget, CurrentPositionDampingInterpolant));
 }
 
 void UCameraWorldSubsystem::TickUpdateCameraZoom(float DeltaTime)
 {
 	if(CameraMain == nullptr) return;
-	float GreatestDistanceBetweenTargets = CalculateGreatestDistanceBetweenTargets();
-	float newY = FMath::GetMappedRangeValueClamped(FVector2D(CameraZoomDistanceBetweenTargetsMin, CameraZoomDistanceBetweenTargetsMax),
-												 FVector2D(CameraZoomYMin,CameraZoomYMax),
-												              GreatestDistanceBetweenTargets);
 
-	CameraMain->SetWorldLocation(FVector(CameraMain->GetComponentLocation().X, newY, CameraMain->GetComponentLocation().Z));
+	if(CurrentSizeDampingInterpolant >= 1)
+	{
+		CurrentSizeDampingInterpolant = 0;
+		float GreatestDistanceBetweenTargets = CalculateGreatestDistanceBetweenTargets();
+		float newY = FMath::GetMappedRangeValueClamped(FVector2D(CameraSettings->DistanceBetweenTargetsMin, CameraSettings->DistanceBetweenTargetsMax),
+													 FVector2D(CameraZoomYMin,CameraZoomYMax),
+													              GreatestDistanceBetweenTargets);
+		CameraPositionStart = CameraMain->GetComponentLocation();
+		CameraPositionTarget = FVector(CameraPositionTarget.X, newY, CameraPositionTarget.Z);
+	}
+	else
+	{
+		CurrentSizeDampingInterpolant += DeltaTime * CameraSettings->SizeDampingFactor;
+	}
+
+	CameraMain->SetWorldLocation(FMath::Lerp(CameraPositionStart, CameraPositionTarget, CurrentSizeDampingInterpolant));
 }
 
 FVector UCameraWorldSubsystem::CalculateAveragePositionBetweenTargets()
@@ -104,7 +134,7 @@ UCameraComponent* UCameraWorldSubsystem::FindCameraByTag(const FName& Tag) const
 AActor* UCameraWorldSubsystem::FindCameraBoundsActor()
 {
 	TArray<AActor*> Actors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "CameraBounds", Actors);
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), CameraSettings->CameraBoundsTag, Actors);
 
 	return Actors[0];
 }
@@ -191,9 +221,9 @@ FVector UCameraWorldSubsystem::CalculateWorldPositionFromViewportPosition(const 
 void UCameraWorldSubsystem::InitCameraZoomParameters()
 {
 	TArray<AActor*> ActorsMin;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "CameraDistanceMin", ActorsMin);
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), CameraSettings->CameraDistanceMinTag, ActorsMin);
 	TArray<AActor*> ActorsMax;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "CameraDistanceMax", ActorsMax);
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), CameraSettings->CameraDistanceMaxTag, ActorsMax);
 
 	if(!ActorsMin.IsEmpty())
 	{

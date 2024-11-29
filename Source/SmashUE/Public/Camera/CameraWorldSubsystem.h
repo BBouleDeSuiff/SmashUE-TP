@@ -9,6 +9,8 @@
 #include "CameraWorldSubsystem.generated.h"
 
 
+class UCameraSettings;
+
 UCLASS()
 class SMASHUE_API UCameraWorldSubsystem : public UTickableWorldSubsystem
 {
@@ -26,6 +28,10 @@ public:
 #pragma region Subsystem MainCamera
 protected:
 	TObjectPtr<UCameraComponent> CameraMain;
+	float CurrentPositionDampingInterpolant = 0.0f;
+	float CurrentSizeDampingInterpolant = 0.0f;
+	FVector CameraPositionTarget;
+	FVector CameraPositionStart;
 	void TickUpdateCameraPosition(float DeltaTime);
 	void TickUpdateCameraZoom(float DeltaTime);
 
@@ -65,6 +71,8 @@ protected:
 	UPROPERTY()
 	float CameraBoundsYProjectionCenter;
 
+	const UCameraSettings* CameraSettings;
+
 	AActor* FindCameraBoundsActor();
 	void InitCameraBounds(AActor* CameraBoundsActor);
 	void ClampPositionIntoCameraBounds(FVector& Position);
@@ -79,11 +87,6 @@ protected:
 	float CameraZoomYMin = 0.0f;
 	UPROPERTY()
 	float CameraZoomYMax = 0.0f;
-
-	UPROPERTY()
-	float CameraZoomDistanceBetweenTargetsMin = 300.f;
-	UPROPERTY()
-	float CameraZoomDistanceBetweenTargetsMax = 1500.f;
 
 	UFUNCTION()
 	void InitCameraZoomParameters();

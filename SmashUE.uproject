@@ -12,6 +12,11 @@
 				"Engine",
 				"DeveloperSettings"
 			]
+		},
+		{
+			"Name": "LocalMultiplayer",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
